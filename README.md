@@ -31,3 +31,12 @@ tsc
 ```js
 npm start
 ```
+
+# Changes:
+
+## New Startup procedure:
+
+```
+npm run build:watch # in one window
+npm run start # in another window.
+```
