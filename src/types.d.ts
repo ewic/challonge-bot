@@ -33,6 +33,14 @@ export interface BotEvent {
     execute: (...args?) => void
 }
 
+export interface TournamentParams {
+    name: string,
+    tournament_type: "single elimination" | "double elimination",
+    description: string,
+    signup_cap?: number,
+    open_signup?: boolean,
+}
+
 declare global {
     namespace NodeJS {
         interface ProcessEnv {

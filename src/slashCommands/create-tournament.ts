@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ChannelType, TextChannel, EmbedBuilder } from "discord.js"
 import { getThemeColor, parseOptionsFromInteraction } from "../functions";
-import { SlashCommand } from "../types";
+import { SlashCommand, TournamentParams } from "../types";
 import { Challonge } from "../middleware/Challonge";
 
 const challonge = new Challonge();
@@ -58,7 +58,13 @@ const command : SlashCommand = {
             await interaction.deferReply({ ephemeral: true});
             const options = parseOptionsFromInteraction(interaction);
             if (!options) return interaction.editReply("Something went wrong...");
-            console.log(options.name.toString());
+            const tournamentParams: TournamentParams = {
+                name: options.name,
+                description: options.description,
+                tournament_type: options.tournament_type,
+            }
+            const response = await challonge.createTournament(tournamentParams);
+            console.log(response);
             interaction.editReply(`Created Tournament ${options.name.toString()}`)
         } catch (error) {
             console.log(error);

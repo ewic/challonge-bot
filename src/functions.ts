@@ -52,7 +52,7 @@ export const setGuildOption = async (guild: Guild, option: GuildOption, value: a
 }
 
 export const parseOptionsFromInteraction = (interaction: CommandInteraction) => {
-    const options: { [key: string]: string | number | boolean } = {};
+    const options: any = {};
     if (!interaction.options) return false;
     for (let i = 0; i < interaction.options.data.length; i++) {
         const element = interaction.options.data[i];
