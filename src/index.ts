@@ -17,3 +17,11 @@ readdirSync(handlersDir).forEach(handler => {
 })
 
 client.login(process.env.TOKEN)
+
+// Handles auto-stop on process exit.
+function stopEvent(code: any) {
+    console.log("Stopping. Code "+code+".");
+    client.destroy();
+}
+process.addListener("SIGINT", stopEvent);
+process.addListener("SIGTERM", stopEvent);

@@ -1,5 +1,5 @@
 import chalk from "chalk"
-import { Guild, GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, TextChannel } from "discord.js"
+import { CommandInteraction, Guild, GuildMember, Interaction, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, TextChannel } from "discord.js"
 import GuildDB from "./schemas/Guild"
 import { GuildOption } from "./types"
 import mongoose from "mongoose";
@@ -49,4 +49,14 @@ export const setGuildOption = async (guild: Guild, option: GuildOption, value: a
     if (!foundGuild) return null;
     foundGuild.options[option] = value
     foundGuild.save()
+}
+
+export const parseOptionsFromInteraction = (interaction: CommandInteraction) => {
+    const options: { [key: string]: string | number | boolean } = {};
+    if (!interaction.options) return false;
+    for (let i = 0; i < interaction.options.data.length; i++) {
+        const element = interaction.options.data[i];
+        if (element.name && element.value) options[element.name] = element.value;
+    }
+    return options;
 }
