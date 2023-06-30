@@ -4,7 +4,7 @@ import { SlashCommand } from "../types";
 const ClearCommand : SlashCommand = {
     command: new SlashCommandBuilder()
     .setName("clear")
-    .setDescription("Delets messages from the current channel.")
+    .setDescription("Deletes messages from the current channel.")
     .addIntegerOption(option => {
         return option
         .setMaxValue(100)
