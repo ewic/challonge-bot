@@ -1,9 +1,9 @@
-import { SlashCommandBuilder, ChannelType, TextChannel, EmbedBuilder, Embed } from "discord.js"
-import { getThemeColor, parseOptionsFromInteraction, tournamentEmbed } from "../functions";
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js"
+import { parseOptionsFromInteraction, tournamentEmbed } from "../functions";
 import { SlashCommand } from "../types";
 import { Challonge } from "../middleware/Challonge";
 
-let challonge = Challonge.getInstance();
+const challonge = Challonge.getInstance();
 
 const command : SlashCommand = {
     command: new SlashCommandBuilder()
@@ -26,7 +26,7 @@ const command : SlashCommand = {
                 { name: "awaiting review", value: "awaiting review" },
                 { name: "complete", value: "complete" },
             ]
-            let filtered: { name: string, value: string }[] = []
+            const filtered: { name: string, value: string }[] = []
             for (let i = 0; i < choices.length; i++) {
                 const choice = choices[i];
                 if (choice.name.includes(focusedValue)) filtered.push(choice);

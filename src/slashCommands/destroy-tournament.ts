@@ -1,5 +1,5 @@
-import { SlashCommandBuilder, ChannelType, TextChannel, EmbedBuilder } from "discord.js"
-import { getThemeColor, parseOptionsFromInteraction } from "../functions";
+import { SlashCommandBuilder } from "discord.js"
+import { parseOptionsFromInteraction } from "../functions";
 import { SlashCommand } from "../types";
 import { Challonge } from "../middleware/Challonge";
 
@@ -19,11 +19,11 @@ const command : SlashCommand = {
     ,
     autocomplete: async interaction => {
         const focusedValue = interaction.options.getFocused();
-        let tournaments = await challonge.fetchTournaments()
+        const tournaments = await challonge.fetchTournaments()
         const choices = tournaments.map(tournament => {
             return {name: tournament.name, value: String(tournament.id)}
         })
-        let filtered: { name: string, value: string }[] = []
+        const filtered: { name: string, value: string }[] = []
             for (let i = 0; i < choices.length; i++) {
                 const choice = choices[i];
                 if (choice.name.includes(focusedValue)) filtered.push(choice);
@@ -38,8 +38,9 @@ const command : SlashCommand = {
             await interaction.deferReply({ephemeral: true})
             const options = parseOptionsFromInteraction(interaction);
             if (!interaction.options) return interaction.editReply({content: "Something went wrong..."});
-            let id = Number(options.id);
+            const id = Number(options.id);
             const response = await challonge.destroyTournament(id);
+            console.log(response);
             interaction.editReply({content: "Success!"})
         } catch (error) {
             console.log(error);

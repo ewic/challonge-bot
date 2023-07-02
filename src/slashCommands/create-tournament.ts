@@ -1,5 +1,5 @@
-import { SlashCommandBuilder, ChannelType, TextChannel, EmbedBuilder } from "discord.js"
-import { getThemeColor, parseOptionsFromInteraction } from "../functions";
+import { SlashCommandBuilder } from "discord.js"
+import { parseOptionsFromInteraction } from "../functions";
 import { SlashCommand, TournamentParams } from "../types";
 import { Challonge } from "../middleware/Challonge";
 
@@ -58,7 +58,7 @@ const command : SlashCommand = {
     autocomplete: async (interaction) => {
         try {
             const focusedOption = interaction.options.getFocused(true);
-            let choices: any[] = [];
+            let choices: {name: string, value: string}[] = [];
             if (focusedOption.name === `type`) {
                 choices = [
                     { name: "Single Elimination", value: "single elimination" },
@@ -92,7 +92,7 @@ const command : SlashCommand = {
             }
             
             // Matching algorithm will match focusedOption.value -> choice.name
-            let filtered: { name: string, value: string }[] = []
+            const filtered: { name: string, value: string }[] = []
             for (let i = 0; i < choices.length; i++) {
               const choice = choices[i];
               if (choice.name.includes(focusedOption.value)) filtered.push(choice);

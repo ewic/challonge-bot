@@ -1,5 +1,5 @@
-import { SlashCommandBuilder, ChannelType, TextChannel, EmbedBuilder } from "discord.js"
-import { getThemeColor, parseOptionsFromInteraction } from "../functions";
+import { SlashCommandBuilder } from "discord.js"
+import { parseOptionsFromInteraction } from "../functions";
 import { SlashCommand } from "../types";
 import { Challonge } from "../middleware/Challonge";
 
@@ -25,8 +25,8 @@ const command : SlashCommand = {
     execute: async interaction => {
         interaction.deferReply({ephemeral: true})
         const options = parseOptionsFromInteraction(interaction);
-        let discord_username = interaction.user.username
-        let response = await challonge.signup(options.tag, discord_username, options.challonge_username);
+        const discord_username = interaction.user.username
+        const response = await challonge.signup(options.tag, discord_username, options.challonge_username);
         if (response.status === 200) interaction.editReply({content: "Signup Success!"})
         else interaction.editReply({content: "Something went wrong. Please content an Organizer."})
     },

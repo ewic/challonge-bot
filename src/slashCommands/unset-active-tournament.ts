@@ -1,5 +1,4 @@
-import { SlashCommandBuilder, ChannelType, TextChannel, EmbedBuilder } from "discord.js"
-import { getThemeColor, parseOptionsFromInteraction } from "../functions";
+import { SlashCommandBuilder } from "discord.js"
 import { SlashCommand } from "../types";
 import { Challonge } from "../middleware/Challonge";
 

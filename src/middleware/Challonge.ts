@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { color } from "../functions";
 import { Participant, TournamentData, TournamentParams } from '../types';
 
 class PrivateChallonge {

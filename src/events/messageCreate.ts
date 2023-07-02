@@ -10,14 +10,14 @@ const event: BotEvent = {
         if (!message.guild) return;
         let prefix = process.env.PREFIX
         if (mongoose.connection.readyState === 1) {
-            let guildPrefix = await getGuildOption(message.guild, "prefix") 
+            const guildPrefix = await getGuildOption(message.guild, "prefix") 
                 if (guildPrefix) prefix = guildPrefix;
         }
 
         if (!message.content.startsWith(prefix)) return;
         if (message.channel.type !== ChannelType.GuildText) return;
 
-        let args = message.content.substring(prefix.length).split(" ")
+        const args = message.content.substring(prefix.length).split(" ")
         let command = message.client.commands.get(args[0])
 
         if (!command) {
@@ -26,8 +26,8 @@ const event: BotEvent = {
             else return;
         }
 
-        let cooldown = message.client.cooldowns.get(`${command.name}-${message.member.user.username}`)
-        let neededPermissions = checkPermissions(message.member, command.permissions)
+        const cooldown = message.client.cooldowns.get(`${command.name}-${message.member.user.username}`)
+        const neededPermissions = checkPermissions(message.member, command.permissions)
         if (neededPermissions !== null)
             return sendTimedMessage(
                 `

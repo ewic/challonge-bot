@@ -1,5 +1,5 @@
-import { SlashCommandBuilder, ChannelType, TextChannel, EmbedBuilder } from "discord.js"
-import { getThemeColor, parseOptionsFromInteraction, tournamentEmbed } from "../functions";
+import { SlashCommandBuilder } from "discord.js"
+import { tournamentEmbed } from "../functions";
 import { SlashCommand } from "../types";
 import { Challonge } from "../middleware/Challonge";
 
@@ -15,7 +15,7 @@ const command : SlashCommand = {
             if (challonge.activeTournamentId === undefined) {
                 interaction.reply({content: `No active tournament`})
             } else {
-                let tournament = await challonge.fetchTournament(challonge.activeTournamentId);
+                const tournament = await challonge.fetchTournament(challonge.activeTournamentId);
                 if (tournament) {
                     interaction.reply({content: "The active tournament", embeds: [tournamentEmbed(tournament)]})
                 }

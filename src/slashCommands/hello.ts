@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChannelType, TextChannel, EmbedBuilder } from "discord.js"
+import { SlashCommandBuilder } from "discord.js"
 import { SlashCommand } from "../types";
 
 const command : SlashCommand = {
@@ -7,7 +7,7 @@ const command : SlashCommand = {
     .setDescription("Replies Hello!")
     ,
     execute: interaction => {
-        let user = interaction.user.username
+        const user = interaction.user.username
         interaction.reply(`Hello, ${user}`)
     },
     cooldown: 10
