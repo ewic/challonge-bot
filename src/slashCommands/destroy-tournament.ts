@@ -3,7 +3,7 @@ import { getThemeColor, parseOptionsFromInteraction } from "../functions";
 import { SlashCommand } from "../types";
 import { Challonge } from "../middleware/Challonge";
 
-const challonge = new Challonge();
+const challonge = Challonge.getInstance();
 
 const command : SlashCommand = {
     command: new SlashCommandBuilder()

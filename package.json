@@ -14,7 +14,7 @@
         "prettier": "prettier --config .prettierrc --write .",
         "test:watch": "jest --watch",
         "start": "cls && node build/index.js",
-        "start:watch": "cls && nodemon build/index.js"
+        "dev": "cls && nodemon build/index.js"
     },
     "keywords": [],
     "author": "MericcaN41",

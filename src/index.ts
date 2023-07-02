@@ -5,6 +5,7 @@ import { Command, SlashCommand } from "./types";
 import { config } from "dotenv";
 import { readdirSync } from "fs";
 import { join } from "path";
+import axios from "axios";
 config()
 
 client.slashCommands = new Collection<string, SlashCommand>()
@@ -25,3 +26,7 @@ function stopEvent(code: any) {
 }
 process.addListener("SIGINT", stopEvent);
 process.addListener("SIGTERM", stopEvent);
+
+axios.defaults.baseURL = `https://api.challonge.com/v1/`;
+axios.defaults.params = {};
+axios.defaults.params['api_key'] = process.env.CHALLONGE_TOKEN;

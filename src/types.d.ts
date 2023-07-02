@@ -39,6 +39,23 @@ export interface TournamentParams {
     description: string,
     signup_cap?: number,
     open_signup?: boolean,
+    game_name: string,
+    start_time: Date,
+    check_in_duration: number,
+}
+
+export interface TournamentData {
+    name: string,
+    tournament_type: "single elimination" | "double elimination",
+    description: string,
+    signup_cap?: number,
+    open_signup?: boolean,
+    state: `pending` | `underway` | `awaiting review` | `complete`,
+    url: string,
+    progress_meter: number,
+    full_challonge_url: string,
+    live_image_url: string,
+    game_name: string,
 }
 
 declare global {

@@ -40,3 +40,13 @@ npm start
 npm run build:watch # in one window
 npm run start # in another window.
 ```
+
+## Notes
+
+```
+Tournament states:
+pending
+underway
+awaiting review
+complete
+```
