@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChannelType, TextChannel, EmbedBuilder, Embed } from "discord.js"
-import { getThemeColor, parseOptionsFromInteraction } from "../functions";
+import { getThemeColor, parseOptionsFromInteraction, tournamentEmbed } from "../functions";
 import { SlashCommand } from "../types";
 import { Challonge } from "../middleware/Challonge";
 
@@ -7,7 +7,7 @@ let challonge = Challonge.getInstance();
 
 const command : SlashCommand = {
     command: new SlashCommandBuilder()
-    .setName("list")
+    .setName("list-tournaments")
     .setDescription("List Active Tournaments")
     .addStringOption(option => {
         return option
@@ -44,21 +44,9 @@ const command : SlashCommand = {
             await interaction.deferReply({ ephemeral: true });
             const options = parseOptionsFromInteraction(interaction);
             const tournaments = await challonge.fetchTournaments(options.state);
-            console.log(tournaments);
             if (tournaments.length > 0) {
                 const embeds: EmbedBuilder[] = tournaments.map((tournament:any) => {
-                    return (
-                        new EmbedBuilder()
-                        .setColor("#ff7324")
-                        .setTitle(tournament['name'])
-                        .setDescription(tournament['description'])
-                        .setURL(`http://challonge.com/${tournament.url}`)
-                        .addFields(
-                            { name: "field title", value:"some field here"}
-                        )
-                        .setTimestamp()
-                        .setFooter({ text: `ID: ${tournament['id']}`})
-                    )
+                    return tournamentEmbed(tournament)
                 })
                 interaction.channel?.send({ embeds: embeds });
                 interaction.editReply(`Listed Tournaments.`)

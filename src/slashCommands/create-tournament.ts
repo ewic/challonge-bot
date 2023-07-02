@@ -35,19 +35,18 @@ const command : SlashCommand = {
                 .setRequired(true)
                 .setAutocomplete(true);
         })
-        .addStringOption(option => {
+        .addIntegerOption(option => {
             return option
                 .setName("start_time")
                 .setDescription("Start Time")
                 .setRequired(true)
                 .setAutocomplete(true);
         })
-        .addStringOption(option => {
+        .addIntegerOption(option => {
             return option
                 .setName("check_in_duration")
-                .setDescription("Check In Duration (in hours)")
+                .setDescription("Check In Duration (in minutes)")
                 .setRequired(true)
-                .setAutocomplete(true);
         })
         .addIntegerOption(option => {
             return option

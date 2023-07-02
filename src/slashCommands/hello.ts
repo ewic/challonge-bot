@@ -1,9 +1,5 @@
 import { SlashCommandBuilder, ChannelType, TextChannel, EmbedBuilder } from "discord.js"
-import { getThemeColor } from "../functions";
 import { SlashCommand } from "../types";
-import { Challonge } from "../middleware/Challonge";
-
-const challonge = Challonge.getInstance();
 
 const command : SlashCommand = {
     command: new SlashCommandBuilder()
@@ -12,7 +8,7 @@ const command : SlashCommand = {
     ,
     execute: interaction => {
         let user = interaction.user.username
-        interaction.reply(`Hello, ${user}, ${global.Bot.testVar}`)
+        interaction.reply(`Hello, ${user}`)
     },
     cooldown: 10
 }

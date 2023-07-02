@@ -36,17 +36,21 @@ npm start
 
 ## New Startup procedure:
 
-```
-npm run build:watch # in one window
-npm run start # in another window.
+```bash
+# In one window
+npm run build:watch 
+# In another window.
+npm run start 
 ```
 
 ## Notes
 
+>Tournament states:
 ```
-Tournament states:
 pending
 underway
 awaiting review
 complete
 ```
+
+>DateTime format:

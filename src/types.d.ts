@@ -45,6 +45,7 @@ export interface TournamentParams {
 }
 
 export interface TournamentData {
+    id: number,
     name: string,
     tournament_type: "single elimination" | "double elimination",
     description: string,
@@ -56,6 +57,12 @@ export interface TournamentData {
     full_challonge_url: string,
     live_image_url: string,
     game_name: string,
+}
+
+export interface Participant {
+    name: string,
+    discord_name: string,
+    challonge_username?: string,
 }
 
 declare global {

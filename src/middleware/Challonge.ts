@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { color } from "../functions";
-import { TournamentData, TournamentParams } from '../types';
+import { Participant, TournamentData, TournamentParams } from '../types';
 
 class PrivateChallonge {
 
@@ -14,6 +14,14 @@ class PrivateChallonge {
         } else {
             this._activeTournamentId = value;
         }
+    }
+
+    private _participantRecord: Participant[] = []
+    get participantRecord(): Participant[] {
+        return this._participantRecord;
+    }
+    set participantRecord(value: Participant[]) {
+        this._participantRecord = value;
     }
 
 //#region Global Interactions
@@ -34,8 +42,6 @@ class PrivateChallonge {
             })
             if (state) {
                 filtered = filtered.filter((item: any) => {
-                    console.log(item['state'] === state)
-                    console.log(item);
                     return item['state'] === state;
                 });
             }
@@ -45,13 +51,34 @@ class PrivateChallonge {
             return [];
         }
     }
+
+    async fetchTournament(id: number): Promise<TournamentData | undefined> {
+        try {
+            const res = await axios.get(`tournaments/${id}.json`)
+            const tournament = res.data.tournament
+            return {
+                id: tournament['id'],
+                name: tournament['name'],
+                tournament_type: tournament['tournament_type'],
+                description: tournament['description'],
+                signup_cap: tournament['signup_cap'],
+                open_signup: tournament['open_signup'],
+                state: tournament['state'],
+                url: tournament['url'],
+                progress_meter: tournament['progress_meter'],
+                full_challonge_url: tournament['full_challonge_url'],
+                live_image_url: tournament['live_image_url'],
+                game_name: tournament['game_name'],
+            }
+        } catch(err) {
+            console.error(err);
+            return undefined
+        }
+    }
+
     async activeTournamentExists() {
         if (this._activeTournamentId === undefined) return false;
         else return true;
-    }
-    async fetchPendingTournaments() {
-        let tournaments = await this.fetchTournaments();
-        console.log(tournaments);
     }
 //#endregion
 
@@ -83,10 +110,31 @@ class PrivateChallonge {
         const res = await axios.delete(`tournaments/${id}.json`);
         return res;
     }
+
+    unsetActiveTournamentId() {
+        this._activeTournamentId = undefined;
+        return true;
+    }
+
+    // Test this...
+    addParticipantToRecord(participant: Participant) {
+        return this._participantRecord.push(participant);
+    }
 //#endregion
     
 //#region Player Interactions
-    async signup(user: {name: string}) {
+    // Sign up a user for the active tournament.
+    //   misc -> Misc field used to match discord ids to userlist
+    async signup(tag: string, misc: string, challonge_username?: string) {
+        if (!this.activeTournamentExists()) return {status: 500, error: 'No Active Tournament'};
+        const params = {
+            name: tag,
+            challonge_username: challonge_username,
+            misc: misc
+        }
+        const res = await axios.post(`tournaments/${this._activeTournamentId}/participants.json`, params);
+        console.log(res);
+        return {status: 200, error: ''};
     }
 //#endregion
 }

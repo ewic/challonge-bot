@@ -7,19 +7,19 @@ const challonge = Challonge.getInstance();
 
 const command : SlashCommand = {
     command: new SlashCommandBuilder()
-    .setName("destroy-tournament")
-    .setDescription("Destroy a tournament [WARNING] This is irreversible")
-    .addStringOption(option => {
+    .setName("activate-tournament")
+    .setDescription("Sets a tournament to active.")
+    .addNumberOption(option => {
         return option
-          .setName("id")
-          .setDescription("ID number of the tournament")
-          .setRequired(true)
-          .setAutocomplete(true)
-      })
+            .setName("id")
+            .setDescription("Select Tournament")
+            .setRequired(true)
+            .setAutocomplete(true)
+    })
     ,
     autocomplete: async interaction => {
         const focusedValue = interaction.options.getFocused();
-        let tournaments = await challonge.fetchTournaments()
+        let tournaments = await challonge.fetchTournaments('pending')
         const choices = tournaments.map(tournament => {
             return {name: tournament.name, value: String(tournament.id)}
         })
@@ -35,14 +35,11 @@ const command : SlashCommand = {
     ,
     execute: async interaction => {
         try {
-            await interaction.deferReply({ephemeral: true})
+            await interaction.deferReply({ephemeral: true});
             const options = parseOptionsFromInteraction(interaction);
-            if (!interaction.options) return interaction.editReply({content: "Something went wrong..."});
-            let id = Number(options.id);
-            const response = await challonge.destroyTournament(id);
-            interaction.editReply({content: "Success!"})
-        } catch (error) {
-            console.log(error);
+            challonge.activeTournamentId = options.id;
+            interaction.editReply({content: `Activated Tournament ${options.id}`})
+        } catch(err) {
             interaction.editReply({content: "Something went wrong..."})
         }
     },

@@ -1,7 +1,7 @@
 import chalk from "chalk"
-import { CommandInteraction, Guild, GuildMember, Interaction, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, TextChannel } from "discord.js"
+import { CommandInteraction, EmbedBuilder, Guild, GuildMember, Interaction, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, TextChannel } from "discord.js"
 import GuildDB from "./schemas/Guild"
-import { GuildOption } from "./types"
+import { GuildOption, TournamentData } from "./types"
 import mongoose from "mongoose";
 
 type colorType = "text" | "variable" | "error"
@@ -59,4 +59,16 @@ export const parseOptionsFromInteraction = (interaction: CommandInteraction) => 
         if (element.name && element.value) options[element.name] = element.value;
     }
     return options;
+}
+
+export const tournamentEmbed = (tournament: TournamentData): EmbedBuilder => {
+    return (
+        new EmbedBuilder()
+        .setColor("#ff7324")
+        .setTitle(tournament['name'])
+        .setDescription(tournament['description'])
+        .setURL(tournament['full_challonge_url'])
+        .setTimestamp()
+        .setFooter({ text: `ID: ${tournament['id']}` })
+    )
 }
