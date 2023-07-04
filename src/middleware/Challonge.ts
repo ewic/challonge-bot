@@ -52,6 +52,19 @@ class PrivateChallonge {
         else return true;
     }
 
+    async activateTournament(id: number): Promise<{status: string, message: string, data: TournamentData}> {
+        if (this.activeTournamentExists()) {
+            const res = await axios.get(`tournaments/${this._activeTournamentId}.json`);
+            const tournament = TournamentResponseToData(res.data.tournament)
+            return { status: "failure", message: `Active Tournament Already Exists, ID: ${tournament.id}`, data: tournament}
+        } else {
+            this.activeTournamentId = id;
+            const res = await axios.get(`tournaments/${id}.json`);
+            const tournament = TournamentResponseToData(res.data.tournament)
+            return { status: "success", message: `Activated Tournament ID: ${tournament.id}`, data: tournament }
+        }
+    }
+
     async fetchParticipants(): Promise<ParticipantData[]> {
         try {
             const res = await axios.get(`tournaments/${this._activeTournamentId}/participants.json`)
@@ -97,24 +110,25 @@ class PrivateChallonge {
         return out;
     }
 
-    async startTournament() {
+    async startTournament(): Promise<{status: number, message: string, data: any}> {
         if (!this.activeTournamentExists()) {
-            return { status: 500, data: { errors: "No Active Tournament" }}
+            return { status: 500, message: "Error: No Active Tournament", data: { errors: "No Active Tournament" }}
         } else {
             const params = {
                 include_matches: 1,
                 include_participants: 1,
             }
             const res = await axios.post(`tournaments/${this._activeTournamentId}/start.json`, params);
-            return res
+            const tournament = TournamentResponseToData(res.data.tournament)
+            return {status: 200, message: "Successfully started Tournament", data: {tournament: tournament}}
         }
     }
 
-    async resetTournament() {
+    async resetTournament(id?: number) {
         if (!this.activeTournamentExists()) {
             return { status: 500, data: { errors: "No Active Tournament" }}
         } else {
-            const res = await axios.post(`tournaments/${this._activeTournamentId}/reset.json`);
+            const res = await axios.post(`tournaments/${id || this._activeTournamentId}/reset.json`);
             return res
         }
     }

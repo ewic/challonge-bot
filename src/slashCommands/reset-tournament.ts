@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder} from "discord.js"
 import { SlashCommand } from "../types";
 import { Challonge } from "../middleware/Challonge";
 
@@ -8,15 +8,56 @@ const command : SlashCommand = {
     command: new SlashCommandBuilder()
     .setName("reset-tournament")
     .setDescription("Resets the active tournament.")
+    .addStringOption(option => {
+        return option
+            .setName("id")
+            .setDescription("Select Tournament")
+            .setRequired(false)
+            .setAutocomplete(true)
+    })
+    ,
+    autocomplete: async interaction => {
+        const focusedValue = interaction.options.getFocused();
+        const tournaments = await challonge.fetchTournaments(['pending', 'underway'])
+        const choices = tournaments.map(tournament => {
+            return {name: tournament.name, value: String(tournament.id)}
+        })
+        const filtered: { name: string, value: string }[] = []
+            for (let i = 0; i < choices.length; i++) {
+                const choice = choices[i];
+                if (choice.name.includes(focusedValue)) filtered.push(choice);
+            }
+            await interaction.respond(
+                filtered
+            );
+    }
     ,
     execute: async interaction => {
         try {
-            await interaction.deferReply({ ephemeral: true });
+            // interaction.reply({content: `Resetting...`});
+            // const confirm = new ButtonBuilder()
+            //     .setCustomId('confirm')
+            //     .setLabel('Confirm Reset')
+            //     .setStyle(ButtonStyle.Danger);
+
+            // const cancel = new ButtonBuilder()
+            //     .setCustomId('confirm')
+            //     .setLabel('Cancel')
+            //     .setStyle(ButtonStyle.Secondary);
+
+            // const row = new ActionRowBuilder()
+            //     .addComponents(cancel, confirm);
+
+            // await interaction.editReply({
+            //     content: `Are you sure you want to reset the current tournament? This will cancel all in-progress matches and completely revert the progress!`,
+            //     components: [row],
+            // })
             const res = await challonge.resetTournament();
-            interaction.editReply({content: "Reset Tournament"})
+            interaction.reply({content: "Reset Tournament"})
         } catch (error) {
             console.log(error);
-            interaction.editReply({content: "Something went wrong..."})
+            interaction.reply({content: "Something went wrong..."})
+            // interaction.editReply({content: "Something went wrong..."})
         }
     }, 
     cooldown: 10

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js"
-import { parseOptionsFromInteraction } from "../functions";
+import { parseOptionsFromInteraction, tournamentEmbed } from "../functions";
 import { SlashCommand } from "../types";
 import { Challonge } from "../middleware/Challonge";
 
@@ -37,8 +37,9 @@ const command : SlashCommand = {
         try {
             await interaction.deferReply({ephemeral: true});
             const options = parseOptionsFromInteraction(interaction);
-            challonge.activeTournamentId = options.id;
-            interaction.editReply({content: `Activated Tournament ${options.id}`})
+            const tournamentResponse = await challonge.activateTournament(options.id);
+            const { status, message, data } = tournamentResponse
+                interaction.editReply({content: `${status} | ${message}`, embeds: [tournamentEmbed(data)]})
         } catch(err) {
             interaction.editReply({content: "Something went wrong..."})
         }
