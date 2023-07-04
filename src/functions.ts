@@ -1,7 +1,7 @@
 import chalk from "chalk"
-import { CommandInteraction, EmbedBuilder, Guild, GuildMember, Interaction, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, TextChannel } from "discord.js"
+import { ColorResolvable, CommandInteraction, EmbedBuilder, Guild, GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, TextChannel } from "discord.js"
 import GuildDB from "./schemas/Guild"
-import { GuildOption, TournamentData } from "./types"
+import { GuildOption, ParticipantData, TournamentData } from "./types"
 import mongoose from "mongoose";
 
 type colorType = "text" | "variable" | "error"
@@ -62,13 +62,47 @@ export const parseOptionsFromInteraction = (interaction: CommandInteraction) => 
 }
 
 export const tournamentEmbed = (tournament: TournamentData): EmbedBuilder => {
+
+    const fields = []
+    if ( tournament['game_name'] ) fields.push({ name: "Game Name", value: String(tournament['game_name']), inline: false })
+    if ( tournament['tournament_type'] ) fields.push({ name: "Type", value: String(tournament['tournament_type']), inline: true })
+    if ( tournament['state'] ) fields.push({ name: "Status", value: String(tournament['state']), inline: true })
+    if ( tournament['state'] === "underway") fields.push({ name: "Progress", value: String(generateProgressBar(tournament['progress_meter']))})
+    
     return (
         new EmbedBuilder()
         .setColor("#ff7324")
         .setTitle(tournament['name'])
         .setDescription(tournament['description'])
+        .addFields(fields)
         .setURL(tournament['full_challonge_url'])
         .setTimestamp()
         .setFooter({ text: `ID: ${tournament['id']}` })
     )
+}
+
+export const participantEmbed = (participant: ParticipantData): EmbedBuilder => {
+    return(
+        new EmbedBuilder()
+        .setColor("Blue" as ColorResolvable)
+        .setTitle(participant.name)
+    )
+}
+
+export const generateProgressBar = (value: number) => {
+    const fullSectionIcon = '🟩'
+    const emptySectionIcon = '⬛'
+
+    const progress = Math.round(value / 10);
+    const remainder = 10 - progress
+
+    let out = '';
+    for (let i = 0; i<progress; i++) {
+        out += fullSectionIcon
+    }
+    for (let i = 0; i < remainder; i++) {
+        out += emptySectionIcon
+    }
+
+    return out;
 }

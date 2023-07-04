@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js"
-import { parseOptionsFromInteraction } from "../functions";
+import { parseOptionsFromInteraction, tournamentEmbed } from "../functions";
 import { SlashCommand, TournamentParams } from "../types";
 import { Challonge } from "../middleware/Challonge";
 
@@ -118,9 +118,14 @@ const command : SlashCommand = {
                 start_time: options.start_time,
                 check_in_duration: options.check_in_duration,
             }
-            const response = await challonge.createTournament(tournamentParams);
-            console.log(response);
-            interaction.editReply(`Created Tournament ${options.name.toString()}`)
+            const tournament = await challonge.createTournament(tournamentParams);
+
+            if (tournament) {
+                // interaction.editReply({embeds: [tournamentEmbed(tournament)]})
+                interaction.editReply(`Created Tournament ${options.name.toString()}`)
+            } else {
+                interaction.editReply({ content: "Something went wrong..." })
+            }
         } catch (error) {
             console.log(error);
             interaction.editReply({ content: "Something went wrong..." });

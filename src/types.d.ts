@@ -35,7 +35,7 @@ export interface BotEvent {
 
 export interface TournamentParams {
     name: string,
-    tournament_type: "single elimination" | "double elimination",
+    tournament_type: string,
     description: string,
     signup_cap?: number,
     open_signup?: boolean,
@@ -47,7 +47,7 @@ export interface TournamentParams {
 export interface TournamentData {
     id: number,
     name: string,
-    tournament_type: "single elimination" | "double elimination",
+    tournament_type: string,
     description: string,
     signup_cap?: number,
     open_signup?: boolean,
@@ -59,9 +59,18 @@ export interface TournamentData {
     game_name: string,
 }
 
-export interface Participant {
+export interface RegistrationParams {
     name: string,
-    discord_name: string,
+    misc: string,
+    challonge_username?: string,
+}
+
+export interface ParticipantData {
+    id: number,
+    tournament_id: number,
+    name: string,
+    seed: number,
+    discord_id?: string,
     challonge_username?: string,
 }
 

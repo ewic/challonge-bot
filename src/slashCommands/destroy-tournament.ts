@@ -36,18 +36,17 @@ const command : SlashCommand = {
     execute: async interaction => {
         try {
             await interaction.deferReply({ephemeral: true})
-            const options = parseOptionsFromInteraction(interaction);
             if (!interaction.options) return interaction.editReply({content: "Something went wrong..."});
+            const options = parseOptionsFromInteraction(interaction);
             const id = Number(options.id);
             const response = await challonge.destroyTournament(id);
-            console.log(response);
             interaction.editReply({content: "Success!"})
         } catch (error) {
             console.log(error);
             interaction.editReply({content: "Something went wrong..."})
         }
     },
-    cooldown: 10
+    cooldown: 5
 }
 
 export default command
