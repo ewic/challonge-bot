@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "clean": "rimraf coverage build tmp",
+        "clean": "riXCXXXXXXXXXXxZmraf coverage build tmp",
         "prebuild": "npm run lint",
         "build": "tsc -p tsconfig.json",
         "build:watch": "tsc -w -p tsconfig.json",
@@ -13,11 +13,11 @@
         "test": "jest --coverage",
         "prettier": "prettier --config .prettierrc --write .",
         "test:watch": "jest --watch",
-        "start": "cls && node build/index.js",
-        "dev": "cls && nodemon build/index.js"
+        "start": "clear && node build/index.js",
+        "dev": "clear && nodemon build/index.js"
     },
     "keywords": [],
-    "author": "MericcaN41",
+    "author": "_ewic",
     "license": "ISC",
     "dependencies": {
         "@discordjs/rest": "^1.1.0",
