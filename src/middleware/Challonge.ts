@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ParticipantData, RegistrationParams, TournamentData, TournamentParams } from '../types';
+import { MatchData, ParticipantData, RegistrationParams, TournamentData, TournamentParams } from '../types';
 
 class PrivateChallonge {
 
@@ -65,9 +65,11 @@ class PrivateChallonge {
         }
     }
 
-    async fetchParticipants(): Promise<ParticipantData[]> {
+    async fetchParticipants(tournamentId?: number): Promise<ParticipantData[]> {
+        if (tournamentId === undefined) tournamentId = this._activeTournamentId;
+        
         try {
-            const res = await axios.get(`tournaments/${this._activeTournamentId}/participants.json`)
+            const res = await axios.get(`tournaments/${tournamentId}/participants.json`)
             const out: ParticipantData[] = []
             res.data.forEach((item: any) => {
                 const participantData = ParticipantResponseToData(item.participant)
@@ -129,7 +131,7 @@ class PrivateChallonge {
             return { status: 500, data: { errors: "No Active Tournament" }}
         } else {
             const res = await axios.post(`tournaments/${id || this._activeTournamentId}/reset.json`);
-            return res
+            
         }
     }
 
@@ -143,9 +145,22 @@ class PrivateChallonge {
         })
     }
 
+    async fetchMatches(): Promise<{status: number, matches: MatchData[], message?: string}> {
+        if (!this.activeTournamentExists()) return {status: 500, matches: [], message: 'No Active Tournament'}
+        const res = await axios.get(`tournaments/${this._activeTournamentId}/matches.json`)
+        let out = {status: 0, matches: []}
+        
+        if (res.status == 200) {
+            out.status = 200
+            out.matches = res.data
+        }
+
+        return out;
+    }
+
     async abortCheckIn(tournamentId: number) {
         const res = await axios.post(`tournaments/${tournamentId}/abort_check_in.json`);
-        return res.data;
+        return res.data; 
     }
 
     async processCheckIns(tournamentId: number) {
@@ -188,6 +203,17 @@ class PrivateChallonge {
         }
     }
 
+    async getPlayerIdFromDiscordId(discordId: number): Promise<number | undefined> {
+        const participants = await this.fetchParticipants();
+        let out;
+        participants.forEach((participant: ParticipantData) => {
+            if (participant['discord_id'] && participant['discord_id'] === discordId) {
+                out = participant['id']
+            }
+        })
+        return out;
+    }
+
     async isPlayerRegistered(id: number): Promise<boolean> {
         try {
             const participants = await this.fetchParticipants();
@@ -199,6 +225,25 @@ class PrivateChallonge {
             console.error(err);
             return false;
         }
+    }
+
+    async findNextMatch(discordId: number): Promise<MatchData | undefined> {
+        const matchesResponse = await this.fetchMatches();
+        const matches = matchesResponse.matches;
+
+        const playerId = await this.getPlayerIdFromDiscordId(discordId);
+
+        let out;
+
+        matches.forEach(((match: MatchData) => {
+            if (match.player1_id === playerId || match.player2_id === playerId) {
+                out = match;
+            }
+        }));
+
+        console.log(out);
+
+        return out;
     }
 //#endregion
 }

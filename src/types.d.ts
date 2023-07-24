@@ -70,8 +70,23 @@ export interface ParticipantData {
     tournament_id: number,
     name: string,
     seed: number,
-    discord_id?: string,
+    discord_id?: number,
     challonge_username?: string,
+}
+
+export interface MatchData {
+    id: number,
+    player1_id: number,
+    player1_discord_id?: number,
+    player2_id: number,
+    player2_discord_id?: number,
+    started_at: string,
+    state: string,
+    tournament_id: number,
+    underway_at: string,
+    updated_at: string,
+    winner_id?: number,
+    scores_csv: string,
 }
 
 declare global {

@@ -1,7 +1,7 @@
 import chalk from "chalk"
-import { ColorResolvable, CommandInteraction, EmbedBuilder, Guild, GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, TextChannel } from "discord.js"
+import { APIEmbed, ColorResolvable, CommandInteraction, EmbedBuilder, Guild, GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, TextChannel } from "discord.js"
 import GuildDB from "./schemas/Guild"
-import { GuildOption, ParticipantData, TournamentData } from "./types"
+import { GuildOption, MatchData, ParticipantData, TournamentData } from "./types"
 import mongoose from "mongoose";
 
 type colorType = "text" | "variable" | "error"
@@ -105,4 +105,13 @@ export const generateProgressBar = (value: number) => {
     }
 
     return out;
+}
+
+export const matchEmbed = (match: MatchData): EmbedBuilder => {
+    return (
+        new EmbedBuilder()
+        .setColor("Green" as ColorResolvable)
+        .setTitle('Match')
+        .setFooter({text: `ID: ${match.id}` })
+    )
 }
