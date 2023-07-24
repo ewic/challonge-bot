@@ -80,7 +80,7 @@ export const tournamentEmbed = (tournament: TournamentData): EmbedBuilder => {
         .addFields(fields)
         .setURL(tournament['full_challonge_url'])
         .setTimestamp()
-        .setFooter({ text: `ID: ${tournament['id']}` })
+        .setFooter({ text: `Tournament ID: ${tournament['id']}` })
     )
 }
 
@@ -89,6 +89,7 @@ export const participantEmbed = (participant: ParticipantData): EmbedBuilder => 
         new EmbedBuilder()
         .setColor("Blue" as ColorResolvable)
         .setTitle(participant.name)
+        .setFooter({text: `Participant ID: ${participant['id']}`})
     )
 }
 
@@ -126,7 +127,7 @@ export const matchEmbed = (match: MatchData): EmbedBuilder => {
         .addFields(
             { name: 'Game Name', value: `${challonge.activeTournament ? challonge.activeTournament['game_name'] : null}`}
         )
-        .setFooter({text: `ID: ${match.id}` })
+        .setFooter({text: `Match ID: ${match.id}` })
     )
 }
 
