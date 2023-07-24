@@ -7,8 +7,7 @@ const command : SlashCommand = {
     .setDescription("Pings your next opponent")
     ,
     execute: interaction => {
-        const user = interaction.user.username
-        interaction.reply(`Hello, ${user}`)
+        interaction.reply(`ping-opponent command`)
     },
     cooldown: 10
 }

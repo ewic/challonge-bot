@@ -7,8 +7,7 @@ const command : SlashCommand = {
     .setDescription("Reports the outcome of a match")
     ,
     execute: interaction => {
-        const user = interaction.user.username
-        interaction.reply(`Hello, ${user}`)
+        interaction.reply(`report command`)
     },
     cooldown: 10
 }
