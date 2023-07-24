@@ -3,15 +3,27 @@ import { MatchData, ParticipantData, RegistrationParams, TournamentData, Tournam
 
 class PrivateChallonge {
 
-    private _activeTournamentId: number | undefined = undefined;
-    get activeTournamentId(): number | undefined {
-        return this._activeTournamentId;
+    // private _activeTournamentId: number | undefined = undefined;
+    // get activeTournamentId(): number | undefined {
+    //     return this._activeTournament['id'];
+    // }
+    // set activeTournamentId(value: number | undefined) {
+    //     if (this._activeTournament['id'] !== undefined) {
+    //         console.error("Active tournament already exists, please unset the active tournament")
+    //     } else {
+    //         this._activeTournament['id'] = value;
+    //     }
+    // }
+
+    private _activeTournament: TournamentData | undefined = undefined;
+    get activeTournament(): TournamentData | undefined {
+        return this._activeTournament;
     }
-    set activeTournamentId(value: number | undefined) {
-        if (this._activeTournamentId !== undefined) {
+    set activeTournament(value: TournamentData | undefined) {
+        if (this._activeTournament !== undefined) {
             console.error("Active tournament already exists, please unset the active tournament")
         } else {
-            this._activeTournamentId = value;
+            this._activeTournament = value;
         }
     }
 
@@ -48,25 +60,29 @@ class PrivateChallonge {
     }
 
     activeTournamentExists(): boolean {
-        if (this._activeTournamentId === undefined) return false;
-        else return true;
+        return this._activeTournament !== undefined;
     }
 
     async activateTournament(id: number): Promise<{status: string, message: string, data: TournamentData}> {
-        if (this.activeTournamentExists()) {
-            const res = await axios.get(`tournaments/${this._activeTournamentId}.json`);
+        if (this.activeTournament !== undefined) {
+            const res = await axios.get(`tournaments/${this.activeTournament['id']}.json`);
             const tournament = TournamentResponseToData(res.data.tournament)
             return { status: "failure", message: `Active Tournament Already Exists, ID: ${tournament.id}`, data: tournament}
         } else {
-            this.activeTournamentId = id;
             const res = await axios.get(`tournaments/${id}.json`);
             const tournament = TournamentResponseToData(res.data.tournament)
+            this.activeTournament = tournament;
             return { status: "success", message: `Activated Tournament ID: ${tournament.id}`, data: tournament }
         }
     }
 
     async fetchParticipants(tournamentId?: number): Promise<ParticipantData[]> {
-        if (tournamentId === undefined) tournamentId = this._activeTournamentId;
+        if (tournamentId === undefined && this.activeTournament) {
+            tournamentId = this.activeTournament['id'];
+        } else {
+            console.error("fetchParticipants Error: No active tournament")
+            return [];
+        }
         
         try {
             const res = await axios.get(`tournaments/${tournamentId}/participants.json`)
@@ -113,24 +129,24 @@ class PrivateChallonge {
     }
 
     async startTournament(): Promise<{status: number, message: string, data: any}> {
-        if (!this.activeTournamentExists()) {
+        if (this._activeTournament === undefined) {
             return { status: 500, message: "Error: No Active Tournament", data: { errors: "No Active Tournament" }}
         } else {
             const params = {
                 include_matches: 1,
                 include_participants: 1,
             }
-            const res = await axios.post(`tournaments/${this._activeTournamentId}/start.json`, params);
+            const res = await axios.post(`tournaments/${this._activeTournament['id']}/start.json`, params);
             const tournament = TournamentResponseToData(res.data.tournament)
             return {status: 200, message: "Successfully started Tournament", data: {tournament: tournament}}
         }
     }
 
     async resetTournament(id?: number) {
-        if (!this.activeTournamentExists()) {
+        if (this._activeTournament === undefined) {
             return { status: 500, data: { errors: "No Active Tournament" }}
         } else {
-            const res = await axios.post(`tournaments/${id || this._activeTournamentId}/reset.json`);
+            const res = await axios.post(`tournaments/${id || this._activeTournament['id']}/reset.json`);
             
         }
     }
@@ -146,8 +162,8 @@ class PrivateChallonge {
     }
 
     async fetchMatches(): Promise<{status: number, matches: MatchData[], message?: string}> {
-        if (!this.activeTournamentExists()) return {status: 500, matches: [], message: 'No Active Tournament'}
-        const res = await axios.get(`tournaments/${this._activeTournamentId}/matches.json`)
+        if (this._activeTournament === undefined) return {status: 500, matches: [], message: 'No Active Tournament'}
+        const res = await axios.get(`tournaments/${this._activeTournament['id']}/matches.json`)
         let out = {status: 0, matches: []}
         
         if (res.status == 200) {
@@ -173,7 +189,7 @@ class PrivateChallonge {
     }
 
     unsetActiveTournamentId() {
-        this._activeTournamentId = undefined;
+        this.activeTournament = undefined;
         return true;
     }
 
@@ -183,7 +199,7 @@ class PrivateChallonge {
     // Sign up a user for the active tournament.
     //   misc -> Misc field used to match discord ids to userlist
     async register(params: RegistrationParams): Promise<{status: number, data: object}> {
-        if (!this.activeTournamentExists()) {
+        if (this.activeTournament === undefined) {
             const data: object = { errors: 'No Active Tournament' }
             return {status: 500, data: data}
         }
@@ -193,7 +209,7 @@ class PrivateChallonge {
                 const data: object = { errors: "Player is already registered" }
                 return { status: 200, data: data}
             } else {
-                const res = await axios.post(`tournaments/${this._activeTournamentId}/participants.json`, params);
+                const res = await axios.post(`tournaments/${this.activeTournament['id']}/participants.json`, params);
                 return { status: 200, data: res.data };
             }
         } catch(err) {
@@ -204,10 +220,11 @@ class PrivateChallonge {
     }
 
     async getPlayerIdFromDiscordId(discordId: number): Promise<number | undefined> {
+        if (this.activeTournament === undefined) return undefined;
         const participants = await this.fetchParticipants();
         let out;
         participants.forEach((participant: ParticipantData) => {
-            if (participant['discord_id'] && participant['discord_id'] === discordId) {
+            if (participant['discord_id'] !== undefined && Number(participant['discord_id']) === discordId) {
                 out = participant['id']
             }
         })
@@ -227,23 +244,20 @@ class PrivateChallonge {
         }
     }
 
-    async findNextMatch(discordId: number): Promise<MatchData | undefined> {
-        const matchesResponse = await this.fetchMatches();
-        const matches = matchesResponse.matches;
+    async fetchMatchesForPlayer(playerId: number): Promise<MatchData[]> {
+        if (this.activeTournament === undefined) return [];
+        else {
+            const res = await axios.get(`/tournaments/${this.activeTournament['id']}/matches.json/?participant_id=${playerId}`);
+            return res.data.map((match:any) => {
+                return match.match;
+            })
+        }
+    }
 
-        const playerId = await this.getPlayerIdFromDiscordId(discordId);
-
-        let out;
-
-        matches.forEach(((match: MatchData) => {
-            if (match.player1_id === playerId || match.player2_id === playerId) {
-                out = match;
-            }
-        }));
-
-        console.log(out);
-
-        return out;
+    async findNextMatch(playerId: number): Promise<MatchData[] | undefined> {
+        if (!playerId) return undefined;
+        const matches = await this.fetchMatchesForPlayer(playerId);
+        return matches
     }
 //#endregion
 }

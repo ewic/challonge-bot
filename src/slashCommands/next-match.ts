@@ -13,13 +13,23 @@ const command : SlashCommand = {
     execute: async interaction => {
         try {
             await interaction.deferReply({ephemeral: true})
-            const nextMatch = await challonge.findNextMatch(Number(interaction.user.id));
 
-            if (nextMatch === undefined) {
-                interaction.editReply({content: `You do not have another match.`})
+            const playerId = await challonge.getPlayerIdFromDiscordId(Number(interaction.user.id));
+            if (!playerId) {
+                interaction.editReply({content: `Error: Player/Match not found. Did you register for this tournament through Discord?`})
             } else {
-                interaction.editReply({content: `Your Next Match Details`, embeds: [matchEmbed(nextMatch)]})
+                const matches = await challonge.findNextMatch(playerId);
+                if (matches === undefined) {
+                    interaction.editReply({content: `You do not have another match.`})
+                } else {
+                    const nextMatch = matches[0];
+                    console.log(matches.length);
+                    console.log(nextMatch);
+                    interaction.editReply({content: `Your Next Match Details`, embeds: [matchEmbed(nextMatch)]})
+                }
             }
+
+
 
             return;
         } catch (error) {
