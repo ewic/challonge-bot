@@ -48,9 +48,9 @@ class PrivateChallonge {
         }
     }
 
-    async fetchTournament(id: number): Promise<TournamentData | undefined> {
+    async fetchTournament(tournamentId: number): Promise<TournamentData | undefined> {
         try {
-            const res = await axios.get(`tournaments/${id}.json`)
+            const res = await axios.get(`tournaments/${tournamentId}.json`)
             const tournament = res.data.tournament
             return TournamentResponseToData(tournament)
         } catch(err) {
@@ -96,6 +96,11 @@ class PrivateChallonge {
             console.error(err);
             return [];
         }
+    }
+
+    unsetActiveTournament(): boolean {
+        this.activeTournament = undefined;
+        return true;
     }
 //#endregion
 
@@ -188,11 +193,6 @@ class PrivateChallonge {
         return res;
     }
 
-    unsetActiveTournamentId() {
-        this.activeTournament = undefined;
-        return true;
-    }
-
 //#endregion
     
 //#region Player Interactions
@@ -252,6 +252,30 @@ class PrivateChallonge {
                 return match.match;
             })
         }
+    }
+
+    async fetchParticipantData(participantId: number): Promise<ParticipantData | undefined> {
+        if (this.activeTournament === undefined) return undefined
+
+        const res = await axios.get(`tournaments/${this.activeTournament['id']}/participants/${[participantId]}.json`)
+        const participantResponse = res.data.participant;
+        let discordId;
+
+        const miscData = JSON.parse(String(participantResponse['misc']));
+        if (miscData != null) {
+            discordId = miscData['discord_id']
+        }
+
+        const participant: ParticipantData = {
+            id: participantResponse['id'],
+            tournament_id: this.activeTournament['id'],
+            name: participantResponse['name'],
+            seed: participantResponse['number'],
+            discord_id: discordId,
+            challonge_username: participantResponse['challonge_username'],
+        }
+
+        return participant;
     }
 
     async findNextMatch(playerId: number): Promise<MatchData[] | undefined> {

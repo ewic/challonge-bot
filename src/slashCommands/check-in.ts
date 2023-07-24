@@ -8,8 +8,7 @@ const command : SlashCommand = {
     .setDescription("Check in to the active tournament")
     ,
     execute: interaction => {
-        interaction.reply({content: "Test response"
-        })
+        interaction.reply({content: "Test response"})
     },
     cooldown: 10
 }

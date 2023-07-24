@@ -10,8 +10,9 @@ const command : SlashCommand = {
     .setDescription("Unsets the active tournament")
     ,
     execute: async interaction => {
-        challonge.unsetActiveTournamentId();
-        interaction.reply({content: "Unset the active tournament."})
+        const success = challonge.unsetActiveTournament();
+        if (success) interaction.reply({content: "Unset the active tournament."})
+        else interaction.reply({content: "Something went wrong..."})
     },
     cooldown: 10
 }

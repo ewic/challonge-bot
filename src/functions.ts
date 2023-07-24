@@ -1,8 +1,11 @@
 import chalk from "chalk"
-import { APIEmbed, ColorResolvable, CommandInteraction, EmbedBuilder, Guild, GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, TextChannel } from "discord.js"
+import { ColorResolvable, CommandInteraction, EmbedBuilder, Guild, GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, TextChannel } from "discord.js"
 import GuildDB from "./schemas/Guild"
 import { GuildOption, MatchData, ParticipantData, TournamentData } from "./types"
 import mongoose from "mongoose";
+import { Challonge } from "./middleware/Challonge";
+
+const challonge = Challonge.getInstance();
 
 type colorType = "text" | "variable" | "error"
 
@@ -108,10 +111,34 @@ export const generateProgressBar = (value: number) => {
 }
 
 export const matchEmbed = (match: MatchData): EmbedBuilder => {
+    const player1 = match['player1']
+    const player2 = match['player2']
+    let title = ``
+
+    if (player1 !== undefined && player2 !== undefined) {
+        title = `${player1['name']} 🥊 🆚 🥊 ${player2['name']}`
+    }
+
     return (
         new EmbedBuilder()
         .setColor("Green" as ColorResolvable)
-        .setTitle('Match')
+        .setTitle(`${title}`)
+        .addFields(
+            { name: 'Game Name', value: `${challonge.activeTournament ? challonge.activeTournament['game_name'] : null}`}
+        )
         .setFooter({text: `ID: ${match.id}` })
     )
+}
+
+export const populateParticipantDataForMatch = async (match: MatchData): Promise<MatchData> => {
+    const player1_id = match['player1_id'];
+    const player2_id = match['player2_id'];
+    
+    const player1 = await challonge.fetchParticipantData(Number(player1_id))
+    const player2 = await challonge.fetchParticipantData(Number(player2_id))
+
+    match['player1'] = player1;
+    match['player2'] = player2;
+
+    return match;
 }

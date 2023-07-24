@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js"
-import { matchEmbed, parseOptionsFromInteraction } from "../functions";
+import { matchEmbed, parseOptionsFromInteraction, populateParticipantDataForMatch } from "../functions";
 import { SlashCommand } from "../types";
 import { Challonge } from "../middleware/Challonge";
 
@@ -23,14 +23,10 @@ const command : SlashCommand = {
                     interaction.editReply({content: `You do not have another match.`})
                 } else {
                     const nextMatch = matches[0];
-                    console.log(matches.length);
-                    console.log(nextMatch);
+                    await populateParticipantDataForMatch(nextMatch);
                     interaction.editReply({content: `Your Next Match Details`, embeds: [matchEmbed(nextMatch)]})
                 }
             }
-
-
-
             return;
         } catch (error) {
             console.log(error);

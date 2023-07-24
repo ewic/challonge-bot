@@ -34,30 +34,11 @@ const command : SlashCommand = {
     ,
     execute: async interaction => {
         try {
-            // interaction.reply({content: `Resetting...`});
-            // const confirm = new ButtonBuilder()
-            //     .setCustomId('confirm')
-            //     .setLabel('Confirm Reset')
-            //     .setStyle(ButtonStyle.Danger);
-
-            // const cancel = new ButtonBuilder()
-            //     .setCustomId('confirm')
-            //     .setLabel('Cancel')
-            //     .setStyle(ButtonStyle.Secondary);
-
-            // const row = new ActionRowBuilder()
-            //     .addComponents(cancel, confirm);
-
-            // await interaction.editReply({
-            //     content: `Are you sure you want to reset the current tournament? This will cancel all in-progress matches and completely revert the progress!`,
-            //     components: [row],
-            // })
             const res = await challonge.resetTournament();
             interaction.reply({content: "Reset Tournament"})
         } catch (error) {
             console.log(error);
             interaction.reply({content: "Something went wrong..."})
-            // interaction.editReply({content: "Something went wrong..."})
         }
     }, 
     cooldown: 10
