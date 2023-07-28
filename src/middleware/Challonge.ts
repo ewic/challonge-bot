@@ -32,7 +32,7 @@ class PrivateChallonge {
         try {
             const res = await axios.get('tournaments.json')
             let filtered = res.data;
-            filtered = filtered.map((item: any) => {
+            filtered = filtered.map((item: { tournament: any }) => {
                 const tournament = item.tournament;
                 return TournamentResponseToData(tournament);
             })
@@ -152,7 +152,7 @@ class PrivateChallonge {
             return { status: 500, data: { errors: "No Active Tournament" }}
         } else {
             const res = await axios.post(`tournaments/${id || this._activeTournament['id']}/reset.json`);
-            
+            return res;
         }
     }
 
@@ -161,7 +161,8 @@ class PrivateChallonge {
         console.log(participants);
         participants.forEach(participant => {
             if (participant['discord_id'] !== undefined) {
-
+                // Do something
+                console.log("Message for Participant", message);
             }
         })
     }
@@ -169,7 +170,7 @@ class PrivateChallonge {
     async fetchMatches(): Promise<{status: number, matches: MatchData[], message?: string}> {
         if (this._activeTournament === undefined) return {status: 500, matches: [], message: 'No Active Tournament'}
         const res = await axios.get(`tournaments/${this._activeTournament['id']}/matches.json`)
-        let out = {status: 0, matches: []}
+        const out = {status: 0, matches: []}
         
         if (res.status == 200) {
             out.status = 200
@@ -317,7 +318,7 @@ function TournamentResponseToData(tournament: any) : TournamentData {
 }
 
 function ParticipantResponseToData(participant: any) : ParticipantData {
-    let out: ParticipantData = {
+    const out: ParticipantData = {
         id: Number(participant['id']),
         tournament_id: Number(participant['tournament_id']),
         name: String(participant['name']),

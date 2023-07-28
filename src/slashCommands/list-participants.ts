@@ -20,7 +20,7 @@ const command : SlashCommand = {
             } else {
                 const participants = await challonge.fetchParticipants();
 
-                let content: string = '📃 Participant List 📃\n';
+                let content = '📃 Participant List 📃\n';
                 participants.forEach((participant) => {
                     if (participant['discord_id'] !== undefined) {
                         content += `${participant['discord_id']} | `
