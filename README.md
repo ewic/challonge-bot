@@ -1,4 +1,10 @@
-<h1 style="text-align:center;">Discord.js v14 Bot Template</h1>
+<h1 style="text-align:center;">Discord Challonge Bot</h1>
+
+# Introduction
+
+Discord bot made to interact with Challonge tournament management website.
+
+This project is a work-in-progress.
 
 ## Features
 
