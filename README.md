@@ -6,16 +6,6 @@ Discord bot made to interact with Challonge tournament management website.
 
 This project is a work-in-progress.
 
-## Features
-
-* 🟦 Typescript
-* 🔥 Slash commands (supports auto complete!)
-* ✉️ Message commands
-* 🕛 Cooldowns
-* 🏴 Detailed Permissions
-* 💪 Event & Command handlers
-* 🍃 MongoDB Support
-
 ## Installation, Build and Run
 1) Clone the repository then create a file named `.env` and fill it out accordingly
 ```js
